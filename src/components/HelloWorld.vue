@@ -1,96 +1,102 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br />
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener"
-        >vue-cli documentation</a
-      >.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel"
-          target="_blank"
-          rel="noopener"
-          >babel</a
+  <div id="app" class="container mt-5">
+    <form @submit.prevent="saveMatch" class="needs-validation" novalidate>
+      <div v-for="(match, index) in matches" :key="index" class="form-row mb-3">
+        <div class="col">
+          <input
+            type="text"
+            v-model="match.club1"
+            class="form-control"
+            placeholder="Club 1"
+            required
+          />
+        </div>
+        <div class="col">
+          <input
+            type="number"
+            v-model="match.score1"
+            min="0"
+            class="form-control"
+            placeholder="Score 1"
+            required
+          />
+        </div>
+        <div class="col">
+          <input
+            type="number"
+            v-model="match.score2"
+            min="0"
+            class="form-control"
+            placeholder="Score 2"
+            required
+          />
+        </div>
+      </div>
+      <button @click="addMatch" class="btn btn-primary">Add Match</button>
+      <button type="submit" class="btn btn-success">Save</button>
+    </form>
+    <div v-if="showResult" class="mt-4">
+      <p>Team Points:</p>
+      <ul class="list-group">
+        <li
+          v-for="(points, team) in teamPoints"
+          :key="team"
+          class="list-group-item"
         >
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint"
-          target="_blank"
-          rel="noopener"
-          >eslint</a
-        >
-      </li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li>
-        <a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a>
-      </li>
-      <li>
-        <a href="https://forum.vuejs.org" target="_blank" rel="noopener"
-          >Forum</a
-        >
-      </li>
-      <li>
-        <a href="https://chat.vuejs.org" target="_blank" rel="noopener"
-          >Community Chat</a
-        >
-      </li>
-      <li>
-        <a href="https://twitter.com/vuejs" target="_blank" rel="noopener"
-          >Twitter</a
-        >
-      </li>
-      <li>
-        <a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a>
-      </li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li>
-        <a href="https://router.vuejs.org" target="_blank" rel="noopener"
-          >vue-router</a
-        >
-      </li>
-      <li>
-        <a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a>
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/vue-devtools#vue-devtools"
-          target="_blank"
-          rel="noopener"
-          >vue-devtools</a
-        >
-      </li>
-      <li>
-        <a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener"
-          >vue-loader</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/awesome-vue"
-          target="_blank"
-          rel="noopener"
-          >awesome-vue</a
-        >
-      </li>
-    </ul>
+          {{ team }}: {{ points }} points
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   name: "HelloWorld",
-  props: {
-    msg: String,
+  data: function () {
+    return {
+      matches: [{ club1: "", score1: null, score2: null }],
+      teamPoints: {},
+      showResult: false,
+    };
+  },
+  methods: {
+    addMatch() {
+      this.matches.push({ club1: "", score1: null, score2: null });
+    },
+    saveMatch() {
+      // Validate the form before proceeding
+      if (!this.validateForm()) {
+        alert("Please fill all the fields for each match.");
+        return;
+      }
+
+      this.calculatePoints();
+      this.showResult = true;
+    },
+    validateForm() {
+      return this.matches.every(
+        (match) => match.club1 && match.score1 !== null && match.score2 !== null
+      );
+    },
+    calculatePoints() {
+      this.teamPoints = {};
+      this.matches.forEach((match) => {
+        const { club1, score1, score2 } = match;
+
+        if (!this.teamPoints[club1]) {
+          this.teamPoints[club1] = 0;
+        }
+
+        if (score1 > score2) {
+          this.teamPoints[club1] += 3; // Club1 wins, gets 3 points
+        } else if (score1 === score2) {
+          this.teamPoints[club1] += 1; // It's a draw, gets 1 point
+        } else {
+          // Club1 loses, gets 0 points
+        }
+      });
+    },
   },
 };
 </script>
