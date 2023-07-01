@@ -65,7 +65,6 @@ export default {
       this.matches.push({ club1: "", score1: null, score2: null });
     },
     saveMatch() {
-      // Validate the form before proceeding
       if (!this.validateForm()) {
         alert("Please fill all the fields for each match.");
         return;
@@ -89,9 +88,9 @@ export default {
         }
 
         if (score1 > score2) {
-          this.teamPoints[club1] += 3; // Club1 wins, gets 3 points
+          this.teamPoints[club1] += 3;
         } else if (score1 === score2) {
-          this.teamPoints[club1] += 1; // It's a draw, gets 1 point
+          this.teamPoints[club1] += 1;
         } else {
           // Club1 loses, gets 0 points
         }
